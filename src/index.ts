@@ -7,3 +7,4 @@ export * from './analysis.ts';
 export * from './constraints.ts';
 export * from './batch.ts';
 export { handleRequest, transferables, type WorkerRequest, type WorkerResponse } from './worker.ts';
+export * from './replay.ts';

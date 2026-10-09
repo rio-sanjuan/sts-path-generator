@@ -30,7 +30,8 @@ export type TraceEvent =
   | { kind: 'remove'; cell: number }
   | { kind: 'cut'; from: number; to: number }
   | { kind: 'repair'; cell: number; type: Room }
-  | { kind: 'move'; step: 'center' | 'spread' | 'straighten'; row: number; from: number; to: number }
+  /** A node moving sideways; `node` is its cell before layout, which stays its identity. */
+  | { kind: 'move'; step: 'center' | 'spread' | 'straighten'; node: number; row: number; from: number; to: number }
   /** The whole map at the end of a phase. */
   | { kind: 'phase'; phase: Phase; map: StsMap };
 
@@ -930,7 +931,7 @@ export class MapGenerator {
         const from = lcol[cell];
         lcol[cell] = from + shift;
         occ[ROW_OF[cell] * COLS + from + shift] = cell;
-        if (this.trace) this.trace.push({ kind: 'move', step: 'center', row: ROW_OF[cell], from, to: from + shift });
+        if (this.trace) this.trace.push({ kind: 'move', step: 'center', node: cell, row: ROW_OF[cell], from, to: from + shift });
       }
     }
 
@@ -964,7 +965,7 @@ export class MapGenerator {
             occ[r * COLS + best] = id;
             lcol[id] = best;
             moved = true;
-            if (this.trace) this.trace.push({ kind: 'move', step: 'spread', row: r, from: col, to: best });
+            if (this.trace) this.trace.push({ kind: 'move', step: 'spread', node: id, row: r, from: col, to: best });
           }
         }
         if (!moved) break;
@@ -986,7 +987,7 @@ export class MapGenerator {
         occ[r * COLS + c] = -1;
         occ[r * COLS + target] = id;
         lcol[id] = target;
-        if (this.trace) this.trace.push({ kind: 'move', step: 'straighten', row: r, from: c, to: target });
+        if (this.trace) this.trace.push({ kind: 'move', step: 'straighten', node: id, row: r, from: c, to: target });
       }
     }
 
