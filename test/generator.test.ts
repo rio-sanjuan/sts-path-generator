@@ -103,6 +103,9 @@ describe('generateMap', () => {
     expect(mapToString(generateMap(1234))).toBe(a);
     expect(mapToString(generateMap(1235))).not.toBe(a);
     expect(mapToString(generateMap('TBL5VNYN4M'))).toBe(mapToString(generateMap(' tbl5vnyn4m ')));
+    // All-digit strings are the number itself.
+    expect(mapToString(generateMap('1234'))).toBe(a);
+    expect(mapToString(generateMap('01234'))).toBe(a);
     // Same height, same seed, different act index: a different map stream.
     expect(mapToString(generateMap(1234, { act: 'overgrowth' }))).toBe(mapToString(generateMap(1234, { act: 'underdocks' })));
     expect(mapToString(generateMap(1234, { act: 'hive', rooms: 15 }))).not.toBe(a);

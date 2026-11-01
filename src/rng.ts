@@ -29,9 +29,15 @@ export function hashString(s: string): number {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
-/** A run seed as the game shows it (e.g. "TBL5VNYN4M") or a raw number, as a uint32. */
+/**
+ * A seed as a uint32: a raw number, an all-digit string (the same number, so
+ * seeds the finder reports can be typed back in), or a run seed as the game
+ * shows it (e.g. "TBL5VNYN4M"), hashed.
+ */
 export function seedValue(seed: number | string): number {
-  return typeof seed === 'string' ? hashString(seed.trim().toUpperCase()) : seed >>> 0;
+  if (typeof seed === 'number') return seed >>> 0;
+  const s = seed.trim().toUpperCase();
+  return /^\d{1,10}$/.test(s) && Number(s) <= 0xffffffff ? Number(s) : hashString(s);
 }
 
 /**

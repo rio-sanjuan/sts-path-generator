@@ -11,8 +11,8 @@ export type Constraint =
   | { kind: 'someRoute'; terms: CountTerm[] }
   /** Every route meets every term. */
   | { kind: 'everyRoute'; terms: CountTerm[] }
-  /** Rooms of these types on the whole map. */
-  | { kind: 'rooms'; type: Room | Room[]; min?: number; max?: number }
+  /** Rooms of these types on the whole map (or between two rows, inclusive). */
+  | { kind: 'rooms'; type: Room | Room[]; min?: number; max?: number; fromRow?: number; toRow?: number }
   /** Distinct start-to-boss routes. */
   | { kind: 'routes'; min?: number; max?: number }
   /** Nodes on the grid. */
@@ -46,8 +46,9 @@ export function compileConstraints(constraints: readonly Constraint[]): MapPredi
           cost: 0,
           test: (map) => {
             let n = 0;
-            const end = (map.rooms + 1) * COLS;
-            for (let cell = COLS; cell < end; cell++) if (mask & (1 << map.type[cell])) n++;
+            const start = Math.max(1, c.fromRow ?? 1) * COLS;
+            const end = (Math.min(map.rooms, c.toRow ?? map.rooms) + 1) * COLS;
+            for (let cell = start; cell < end; cell++) if (mask & (1 << map.type[cell])) n++;
             return within(n, c.min, c.max);
           },
         });

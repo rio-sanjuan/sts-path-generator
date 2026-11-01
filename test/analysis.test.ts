@@ -124,7 +124,10 @@ describe('constraints', () => {
       const pick = rng.int(4);
       if (pick === 0) constraints.push({ kind: 'someRoute', terms: [randomTerm(rng, 14), randomTerm(rng, 14)] });
       if (pick === 1) constraints.push({ kind: 'everyRoute', terms: [randomTerm(rng, 14)] });
-      if (pick === 2) constraints.push({ kind: 'rooms', type: Room.Unknown, min: 9 + rng.int(3), max: 11 + rng.int(3) });
+      if (pick === 2) {
+        const fromRow = rng.int(2) ? 1 + rng.int(7) : undefined;
+        constraints.push({ kind: 'rooms', type: Room.Unknown, min: rng.int(10), max: 6 + rng.int(8), fromRow });
+      }
       if (pick === 3) constraints.push({ kind: 'routes', min: 20 + rng.int(100) }, { kind: 'nodes', max: 50 + rng.int(10) });
       const predicate = compileConstraints(constraints);
       for (const map of maps) {
@@ -138,7 +141,9 @@ describe('constraints', () => {
               return routes.every((r) => c.terms.every((t) => meets(map, r, t)));
             case 'rooms': {
               let n = 0;
-              for (let cell = COLS; cell < (map.rooms + 1) * COLS; cell++) if (map.type[cell] === c.type) n++;
+              for (let cell = COLS; cell < (map.rooms + 1) * COLS; cell++) {
+                if (map.type[cell] === c.type && rowOf(cell) >= (c.fromRow ?? 1) && rowOf(cell) <= (c.toRow ?? map.rooms)) n++;
+              }
               return n >= (c.min ?? 0) && n <= (c.max ?? Infinity);
             }
             case 'routes':
