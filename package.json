@@ -22,11 +22,13 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "bench": "node bench/bench.ts"
+    "bench": "node bench/bench.ts",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "typescript": "~5.9.3",
     "vitest": "^5.0.3"
-  }
+  },
+  "license": "MIT"
 }
